@@ -8,11 +8,8 @@ const fs = (() => {
   }
 })()
 
+const isBrowser = require("./is-browser")
 const papa = require("papaparse")
-
-const isBrowser = new Function(
-  "try { return this === window } catch(e) { return false }"
-)
 
 function getPapaDefaultOptions() {
   return {

@@ -66,7 +66,7 @@ saveCSV(
 )
 ```
 
-Given a `path` (either a URL or a filesystem path depending whether you're in a browser or Node environment, as described in the [Usage](#usage) section above) and a `DataFrame` (`data`), this function returns a `Promise` that resolves to a boolean where `true` means "the file was saved" and `false` means "the file was not saved". It also accepts an optional callback function, if you prefer that style. See [the section below](#configuration) for more information about the optional `config` object.
+Given a `path` (either a URL or a filesystem path depending whether you're in a browser or Node environment, as described in the [Usage](#usage) section above) and a `DataFrame` (`data`), this function returns a `Promise` that resolves to `true`. (If something goes wrong during saving, an error will just be thrown instead of returning `false`.) It also accepts an optional callback function, if you prefer that style. See [the section below](#configuration) for more information about the optional `config` object.
 
 ### Configuration
 
