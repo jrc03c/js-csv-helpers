@@ -31,6 +31,7 @@ function parseCSVString(raw, options) {
 
   let values, columns, index
 
+  // no index or header
   if (!options.hasHeaderRow && !options.hasIndexColumn) {
     values = data
     const medianRowLength = median(values.map(row => row.length))
@@ -45,6 +46,7 @@ function parseCSVString(raw, options) {
     )
   }
 
+  // header but no index
   if (options.hasHeaderRow && !options.hasIndexColumn) {
     values = data.slice(1)
     columns = data[0]
@@ -54,18 +56,21 @@ function parseCSVString(raw, options) {
     )
   }
 
+  // index but no header
   if (!options.hasHeaderRow && options.hasIndexColumn) {
     values = data
-    const medianRowLength = median(values.map(row => row.length))
-    values.forEach(row => (row.length = medianRowLength))
+    const medianRowLength = median(values.map(row => row.length)) - 1
 
     index = values.map(row => row.splice(0, 1)[0])
+
+    values.forEach(row => (row.length = medianRowLength))
 
     columns = range(0, medianRowLength).map(
       i => `col${leftPad(i, medianRowLength.toString().length)}`
     )
   }
 
+  // both index and header
   if (options.hasHeaderRow && options.hasIndexColumn) {
     values = data
     columns = values[0].slice(1)
