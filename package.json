@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "watch": "esbuild res/js/src/main.js --bundle --outfile=res/js/bundle.js --minify --watch"
+    "watch": "esbuild res/js/src/main.js --bundle --outfile=res/js/bundle.js --watch"
   },
   "keywords": [],
   "author": "",

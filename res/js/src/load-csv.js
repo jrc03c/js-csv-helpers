@@ -14,6 +14,36 @@ const isBrowser = new Function(
   "try { return this === window } catch(e) { return false }"
 )
 
+function getPapaDefaultOptions() {
+  return {
+    delimiter: "", // auto-detect
+    newline: "", // auto-detect
+    quoteChar: '"',
+    escapeChar: '"',
+    header: false,
+    transformHeader: undefined,
+    dynamicTyping: false,
+    preview: 0,
+    encoding: "",
+    worker: false,
+    comments: false,
+    step: undefined,
+    complete: undefined,
+    error: undefined,
+    download: false,
+    downloadRequestHeaders: undefined,
+    downloadRequestBody: undefined,
+    skipEmptyLines: false,
+    chunk: undefined,
+    chunkSize: undefined,
+    fastMode: undefined,
+    beforeFirstChunk: undefined,
+    withCredentials: undefined,
+    transform: undefined,
+    delimitersToGuess: [",", "\t", "|", ";", papa.RECORD_SEP, papa.UNIT_SEP],
+  }
+}
+
 function leftPad(x, n) {
   x = x.toString()
   while (x.length < n) x = "0" + x
@@ -21,6 +51,8 @@ function leftPad(x, n) {
 }
 
 function parseCSVString(raw, options) {
+  options = options || getPapaDefaultOptions()
+
   const results = papa.parse(raw.trim(), options)
   let data, columns
 

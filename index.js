@@ -7,6 +7,9 @@ async function run() {
 
   const temp2 = await loadCSV("temp2.csv", { header: true })
   print(temp2)
+
+  const temp3 = await loadCSV("temp1.csv")
+  print(temp3)
 }
 
 run()
