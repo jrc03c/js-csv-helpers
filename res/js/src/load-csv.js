@@ -21,75 +21,33 @@ function leftPad(x, n) {
 }
 
 function parseCSVString(raw, options) {
-  const { data } = papa.parse(
-    raw
-      .split("\n")
-      .map(line => line.trim())
-      .join("\n")
-      .trim()
-  )
+  const results = papa.parse(raw.trim(), options)
+  let data, columns
 
-  let values, columns, index
+  if (options.header) {
+    data = {}
 
-  // no index or header
-  if (!options.hasHeaderRow && !options.hasIndexColumn) {
-    values = data
-    const medianRowLength = median(values.map(row => row.length))
-    values.forEach(row => (row.length = medianRowLength))
+    columns = results.meta.fields
+
+    columns.forEach(col => {
+      data[col] = results.data.map(row => row[col])
+    })
+  } else {
+    const medianRowLength = median(results.data.map(row => row.length))
 
     columns = range(0, medianRowLength).map(
       i => `col${leftPad(i, medianRowLength.toString().length)}`
     )
 
-    index = range(0, values.length).map(
-      i => `row${leftPad(i, values.length.toString().length)}`
-    )
+    data = results.data
   }
 
-  // header but no index
-  if (options.hasHeaderRow && !options.hasIndexColumn) {
-    values = data.slice(1)
-    columns = data[0]
-
-    index = range(0, values.length).map(
-      i => `row${leftPad(i, values.length.toString().length)}`
-    )
-  }
-
-  // index but no header
-  if (!options.hasHeaderRow && options.hasIndexColumn) {
-    values = data
-    const medianRowLength = median(values.map(row => row.length)) - 1
-
-    index = values.map(row => row.splice(0, 1)[0])
-
-    values.forEach(row => (row.length = medianRowLength))
-
-    columns = range(0, medianRowLength).map(
-      i => `col${leftPad(i, medianRowLength.toString().length)}`
-    )
-  }
-
-  // both index and header
-  if (options.hasHeaderRow && options.hasIndexColumn) {
-    values = data
-    columns = values[0].slice(1)
-    index = values.slice(1).map(row => row[0])
-    values = values.slice(1).map(row => row.slice(1))
-  }
-
-  const out = new DataFrame(values)
+  const out = new DataFrame(data)
   out.columns = columns
-  out.index = index
   return out
 }
 
 module.exports = async function loadCSV(path, options) {
-  options = options || {
-    hasHeaderRow: true,
-    hasIndexColumn: false,
-  }
-
   const raw = await (async () => {
     if (isBrowser()) {
       const response = await fetch(path)
