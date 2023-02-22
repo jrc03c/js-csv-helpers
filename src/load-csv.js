@@ -1,4 +1,4 @@
-const { DataFrame, median, range } = require("@jrc03c/js-math-tools")
+const { DataFrame, inferType, median, range } = require("@jrc03c/js-math-tools")
 
 const fs = (() => {
   try {
@@ -41,6 +41,11 @@ function getPapaDefaultOptions() {
     withCredentials: undefined,
     transform: undefined,
     delimitersToGuess: [",", "\t", "|", ";", papa.RECORD_SEP, papa.UNIT_SEP],
+
+    // I'm also adding my own options to infer types using my `inferTypes`
+    // function in @jrc03c/js-math-tools. Papa offers a "dynamicTyping" option,
+    // but I think maybe mine is a little more extensive.
+    inferTypes: false,
   }
 }
 
@@ -76,7 +81,10 @@ function parseCSVString(raw, options) {
 
   const out = new DataFrame(data)
   out.columns = columns
-  return out
+
+  return options && options.inferTypes
+    ? out.apply(col => inferType(col).values)
+    : out
 }
 
 module.exports = async function loadCSV(path, options) {
