@@ -1,6 +1,6 @@
 const fs = (() => {
   try {
-    return require("fs")
+    return require("fs/promises")
   } catch (e) {
     return null
   }
@@ -26,10 +26,10 @@ module.exports = async function saveCSV(path, df) {
   } else {
     const dir = path.split("/").slice(0, -1).join("/")
 
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true })
-    }
+    try {
+      await fs.mkdir(dir, { recursive: true })
+    } catch (e) {}
 
-    fs.writeFileSync(path, df)
+    await fs.writeFile(path, out, { encoding: "utf8" })
   }
 }

@@ -2,7 +2,7 @@ const { DataFrame, inferType, median, range } = require("@jrc03c/js-math-tools")
 
 const fs = (() => {
   try {
-    return require("fs")
+    return require("fs/promises")
   } catch (e) {
     return null
   }
@@ -90,7 +90,7 @@ module.exports = async function loadCSV(path, options) {
       const response = await fetch(path)
       return await response.text()
     } else {
-      return fs.readFileSync(path, "utf8")
+      return await fs.readFile(path, { encoding: "utf8" })
     }
   })()
 
