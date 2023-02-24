@@ -1,14 +1,17 @@
-const loadCSV = require("./load-csv")
-const saveCSV = require("./save-csv")
+const helpers = {
+  isBrowser: require("./is-browser"),
+  loadCSV: require("./load-csv"),
+  parse: require("./parse"),
+  saveCSV: require("./save-csv"),
+  unparse: require("./unparse"),
+}
 
 if (typeof window !== "undefined") {
-  window.loadCSV = loadCSV
-  window.saveCSV = saveCSV
+  Object.keys(helpers).forEach(key => {
+    window[key] = helpers[key]
+  })
 }
 
 if (typeof module !== "undefined") {
-  module.exports = {
-    loadCSV,
-    saveCSV,
-  }
+  module.exports = helpers
 }

@@ -7,7 +7,7 @@ const fs = (() => {
 })()
 
 const isBrowser = require("./is-browser")
-const papa = require("papaparse")
+const unparse = require("./unparse")
 
 function download(filename, text) {
   let a = document.createElement("a")
@@ -16,13 +16,11 @@ function download(filename, text) {
   a.dispatchEvent(new MouseEvent("click"))
 }
 
-module.exports = async function saveCSV(path, df) {
-  const out = papa.unparse([df.columns].concat(df.values), {
-    columns: df.columns,
-  })
+module.exports = async function saveCSV(path, df, config) {
+  const raw = unparse(df, config)
 
   if (isBrowser()) {
-    download(path, out)
+    download(path, raw)
   } else {
     const dir = path.split("/").slice(0, -1).join("/")
 
@@ -30,6 +28,6 @@ module.exports = async function saveCSV(path, df) {
       await fs.mkdir(dir, { recursive: true })
     } catch (e) {}
 
-    await fs.writeFile(path, out, { encoding: "utf8" })
+    await fs.writeFile(path, raw, { encoding: "utf8" })
   }
 }
