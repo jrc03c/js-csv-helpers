@@ -4,6 +4,7 @@ module.exports = {
     commonjs: true,
     es2021: true,
     node: true,
+    vue: true,
   },
   extends: "eslint:recommended",
   overrides: [],
