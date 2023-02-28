@@ -1,6 +1,6 @@
 # Intro
 
-This is a little helper library to complement [@jrc03c/js-math-tools](https://github.com/jrc03c/js-math-tools) and [@jrc03c/js-data-science-helpers](https://github.com/jrc03c/js-data-science-helpers). All it does is load CSV files as `DataFrame` objects and save `DataFrame` objects as CSV files.
+This is a little helper library to complement [@jrc03c/js-math-tools](https://github.com/jrc03c/js-math-tools) and [@jrc03c/js-data-science-helpers](https://github.com/jrc03c/js-data-science-helpers). It's a relatively thin wrapper around [`papaparse`](https://www.papaparse.com/). All it does is load CSV files or strings as `DataFrame` objects and save `DataFrame` objects as CSV files or strings.
 
 # Installation
 
@@ -15,13 +15,15 @@ Node & bundlers:
 ```js
 const { loadCSV, saveCSV } = require("js-csv-helpers")
 
-// load
-loadCSV("path/to/my-data.csv").then(df => {
+async function doStuff() {
+  // load
+  const df = await loadCSV("path/to/my-data.csv")
+
   // save
-  saveCSV("path/to/other-data.csv", df).then(() => {
-    console.log("Done!")
-  })
-})
+  await saveCSV("path/to/other-data.csv")
+}
+
+doStuff()
 ```
 
 Browser:
@@ -29,76 +31,87 @@ Browser:
 ```html
 <script src="path/to/dist/js-csv-helpers"></script>
 <script>
-  // load
-  loadCSV("path/to/my-data.csv").then(df => {
+  const { loadCSV, saveCSV } = JSCSVHelpers
+
+  async function doStuff() {
+    // load
+    const df = await loadCSV("path/to/my-data.csv")
+
     // save
-    saveCSV("other-data.csv", df).then(() => {
-      console.log("Done!")
-    })
-  })
+    await saveCSV("path/to/other-data.csv")
+  }
+
+  doStuff()
 </script>
 ```
 
-> **NOTE:** Usage in both environments is basically identical except for one thing: In the browser, `saveCSV` takes a _filename_ and a `DataFrame`; but in Node, `saveCSV` takes a _path_ and a `DataFrame`. That's because the browser can only download files without specifying _where_ to save them.
+> **NOTE:** Usage in both environments is basically identical except for one thing: In the browser, `saveCSV` takes a _filename_ and a `DataFrame`; but in Node, `saveCSV` takes a _path_ and a `DataFrame`. That's because the browser can only download files; it can't (in JS) specify where the files ought to be saved.
 
 # API
 
-## `loadCSV`
+## `loadCSV(path, config)`
 
-```
-loadCSV(
-  path: string,
-  config: object || null,
-  callback: function || null,
-)
-```
+Given a `path` (and optionally a [`config`](#configuration) object), this function returns a `Promise` that resolves to a `DataFrame`.
 
-Given a `path`, this function returns a `Promise` that resolves to a `DataFrame`. It also accepts a optional callback function, if you prefer that style. See [the section below](#configuration) for more information about the optional `config` object.
+## `parse(csvString, config)`
 
-## `saveCSV`
+Given a CSV string and a [`config`](#configuration) object, this function returns a `DataFrame` (synchronously).
 
-```
-saveCSV(
-  path: string,
-  data: DataFrame,
-  config: object || null,
-  callback: function || null,
-)
-```
+## `saveCSV(path, df, config)`
 
-Given a `path` (either a URL or a filesystem path depending whether you're in a browser or Node environment, as described in the [Usage](#usage) section above) and a `DataFrame` (`data`), this function returns a `Promise` that resolves to `true`. (If something goes wrong during saving, an error will just be thrown instead of returning `false`.) It also accepts an optional callback function, if you prefer that style. See [the section below](#configuration) for more information about the optional `config` object.
+Given a `path` and a `DataFrame` (`data`) (and optionally a [`config`](#configuration) object), this function returns a `Promise` that resolves to `undefined`.
+
+## `unparse(df, config)`
+
+Given a `DataFrame` and a [`config`](#configuration) object, this function returns a CSV string (synchronously).
 
 ### Configuration
 
-This library is basically a thin wrapper around [`papaparse`](https://www.papaparse.com/). Any configuration object you could pass into this library's functions will be passed directly into `papaparse`'s functions. See [their configuration documentation](https://www.papaparse.com/docs#config) for more info. As of today, the default configuration values are:
+#### Loading & parsing
+
+This library is basically a thin wrapper around [`papaparse`](https://www.papaparse.com/). Any configuration object you could pass into this library's functions will be passed directly into `papaparse`'s functions. See [their documentation](https://www.papaparse.com/docs) for more info.
+
+As of today, Papa's default configuration values for parsing are:
 
 ```js
 {
-  delimiter: "", // auto-detect
-  newline: "",   // auto-detect
-  quoteChar: '"',
-  escapeChar: '"',
-  header: false,
-  transformHeader: undefined,
-  dynamicTyping: false,
-  preview: 0,
-  encoding: "",
-  worker: false,
-  comments: false,
-  step: undefined,
-  complete: undefined,
-  error: undefined,
-  download: false,
-  downloadRequestHeaders: undefined,
-  downloadRequestBody: undefined,
-  skipEmptyLines: false,
+  beforeFirstChunk: undefined,
   chunk: undefined,
   chunkSize: undefined,
+  comments: false,
+  complete: undefined,
+  delimiter: "",
+  delimitersToGuess: [",", "\t", "|", ";", papa.RECORD_SEP, papa.UNIT_SEP],
+  download: false,
+  downloadRequestBody: undefined,
+  downloadRequestHeaders: undefined,
+  dynamicTyping: false,
+  encoding: "",
+  error: undefined,
+  escapeChar: '"',
   fastMode: undefined,
-  beforeFirstChunk: undefined,
-  withCredentials: undefined,
+  newline: "",
+  preview: 0,
+  quoteChar: '"',
+  skipEmptyLines: false,
+  step: undefined,
   transform: undefined,
-  delimitersToGuess: [',', '\t', '|', ';', Papa.RECORD_SEP, Papa.UNIT_SEP]
+  transformHeader: undefined,
+  withCredentials: undefined,
+  worker: false,
+
+  // This is the only value that's been changed from the Papa defaults because,
+  // for my purposes, I anticipate that most datasets will include a header
+  // row.
+  header: true,
+
+  // I'm also adding my own option to infer types using my `inferType` function
+  // in @jrc03c/js-math-tools. Papa offers a "dynamicTyping" option, but I
+  // think maybe mine is a little more extensive (i.e., I think it infers more
+  // data types, but may not necessarily be more robust). I'm willing to be
+  // wrong about that, though. By default, this value is set to `false`, which
+  // means that the returned `DataFrame` will only contain strings.
+  inferTypes: false,
 }
 ```
 
@@ -112,4 +125,29 @@ loadCSV("path/to/my-data.csv", { inferTypes: true })
 
 // use papaparse's type inference
 loadCSV("path/to/my-data.csv", { dynamicTyping: true })
+```
+
+#### Unparsing & saving
+
+As of today, Papa's default configuration values for unparsing are:
+
+```js
+{
+  columns: null,
+  delimiter: ",",
+  escapeChar: '"',
+  header: true,
+  quoteChar: '"',
+  quotes: false,
+  skipEmptyLines: false,
+
+  // This is the only value that's been changed from Papa's defaults.
+  newline: "\n",
+}
+```
+
+Here's an example of how to use it:
+
+```js
+saveCSV("path/to/my-data.csv", myDataFrame, { delimiter: "\t" })
 ```

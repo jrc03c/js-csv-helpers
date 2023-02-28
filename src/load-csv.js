@@ -9,7 +9,7 @@ const fs = (() => {
 const isBrowser = require("./is-browser")
 const parse = require("./parse")
 
-module.exports = async function loadCSV(path, options) {
+module.exports = async function loadCSV(path, config) {
   const raw = await (async () => {
     if (isBrowser()) {
       const response = await fetch(path)
@@ -19,5 +19,5 @@ module.exports = async function loadCSV(path, options) {
     }
   })()
 
-  return parse(raw, options)
+  return parse(raw, config)
 }

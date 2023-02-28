@@ -1,4 +1,4 @@
-const helpers = {
+const JSCSVHelpers = {
   isBrowser: require("./is-browser"),
   loadCSV: require("./load-csv"),
   parse: require("./parse"),
@@ -7,11 +7,9 @@ const helpers = {
 }
 
 if (typeof window !== "undefined") {
-  Object.keys(helpers).forEach(key => {
-    window[key] = helpers[key]
-  })
+  window.JSCSVHelpers = JSCSVHelpers
 }
 
 if (typeof module !== "undefined") {
-  module.exports = helpers
+  module.exports = JSCSVHelpers
 }

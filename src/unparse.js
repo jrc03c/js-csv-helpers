@@ -1,24 +1,28 @@
 const { isUndefined } = require("@jrc03c/js-math-tools")
 const papa = require("papaparse")
 
-const defaultConfig = {
-  quotes: false,
-  quoteChar: '"',
-  escapeChar: '"',
-  delimiter: ",",
-  header: true,
-  skipEmptyLines: false,
-  columns: null,
-
-  // I'm modifying this from its default value of "\r\n":
-  newline: "\n",
-}
-
 module.exports = function unparse(df, config) {
-  config = config || structuredClone(defaultConfig)
+  const defaults = {
+    columns: null,
+    delimiter: ",",
+    escapeChar: '"',
+    header: true,
+    quoteChar: '"',
+    quotes: false,
+    skipEmptyLines: false,
+
+    // This is the only value that's been changed from Papa's defaults.
+    newline: "\n",
+  }
+
+  config = config ? { ...defaults, ...config } : defaults
 
   if (!config.columns) {
     config.columns = df.columns
+  }
+
+  if (typeof config.header === "boolean" && !config.header) {
+    config.columns = null
   }
 
   df = df.copy()

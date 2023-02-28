@@ -8,41 +8,48 @@ function leftPad(x, n) {
 }
 
 module.exports = function parse(raw, config) {
-  config = config || {
-    delimiter: "",
-    newline: "",
-    quoteChar: '"',
-    escapeChar: '"',
-    transformHeader: undefined,
-    dynamicTyping: false,
-    preview: 0,
-    encoding: "",
-    worker: false,
-    comments: false,
-    step: undefined,
-    complete: undefined,
-    error: undefined,
-    download: false,
-    downloadRequestHeaders: undefined,
-    downloadRequestBody: undefined,
-    skipEmptyLines: false,
+  const defaults = {
+    beforeFirstChunk: undefined,
     chunk: undefined,
     chunkSize: undefined,
-    fastMode: undefined,
-    beforeFirstChunk: undefined,
-    withCredentials: undefined,
-    transform: undefined,
+    comments: false,
+    complete: undefined,
+    delimiter: "",
     delimitersToGuess: [",", "\t", "|", ";", papa.RECORD_SEP, papa.UNIT_SEP],
+    download: false,
+    downloadRequestBody: undefined,
+    downloadRequestHeaders: undefined,
+    dynamicTyping: false,
+    encoding: "",
+    error: undefined,
+    escapeChar: '"',
+    fastMode: undefined,
+    newline: "",
+    preview: 0,
+    quoteChar: '"',
+    skipEmptyLines: false,
+    step: undefined,
+    transform: undefined,
+    transformHeader: undefined,
+    withCredentials: undefined,
+    worker: false,
 
-    // I'm also adding my own options to infer types using my `inferTypes`
-    // function in @jrc03c/js-math-tools. Papa offers a "dynamicTyping" option,
-    // but I think maybe mine is a little more extensive. I'm willing to be
-    // wrong about that, though.
-    inferTypes: false,
-
-    // I'm changing this from its default value of `false`:
+    // This is the only value that's been changed from the Papa defaults
+    // because, for my purposes, I anticipate that most datasets will include a
+    // header row.
     header: true,
+
+    // I'm also adding my own options to infer types using my `inferType`
+    // function in @jrc03c/js-math-tools. Papa offers a "dynamicTyping" option,
+    // but I think maybe mine is a little more extensive (i.e., I think it
+    // infers more data types, but may not necessarily be more robust). I'm
+    // willing to be wrong about that, though. By default, this value is set to
+    // `false`, which means that the returned `DataFrame` will only contain
+    // strings.
+    inferTypes: false,
   }
+
+  config = config ? { ...defaults, ...config } : defaults
 
   const results = papa.parse(raw.trim(), config)
   let data, columns
