@@ -13,7 +13,6 @@ module.exports = function parse(raw, config) {
     newline: "",
     quoteChar: '"',
     escapeChar: '"',
-    header: false,
     transformHeader: undefined,
     dynamicTyping: false,
     preview: 0,
@@ -37,8 +36,12 @@ module.exports = function parse(raw, config) {
 
     // I'm also adding my own options to infer types using my `inferTypes`
     // function in @jrc03c/js-math-tools. Papa offers a "dynamicTyping" option,
-    // but I think maybe mine is a little more extensive.
+    // but I think maybe mine is a little more extensive. I'm willing to be
+    // wrong about that, though.
     inferTypes: false,
+
+    // I'm changing this from its default value of `false`:
+    header: true,
   }
 
   const results = papa.parse(raw.trim(), config)
