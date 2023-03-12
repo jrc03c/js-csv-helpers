@@ -20,7 +20,7 @@ async function doStuff() {
   const df = await loadCSV("path/to/my-data.csv")
 
   // save
-  await saveCSV("path/to/other-data.csv")
+  await saveCSV("path/to/other-data.csv", df)
 }
 
 doStuff()
@@ -38,7 +38,7 @@ Browser:
     const df = await loadCSV("path/to/my-data.csv")
 
     // save
-    await saveCSV("path/to/other-data.csv")
+    await saveCSV("path/to/other-data.csv", df)
   }
 
   doStuff()
