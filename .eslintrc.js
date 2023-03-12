@@ -6,7 +6,7 @@ module.exports = {
     jest: true,
     node: true,
   },
-  extends: "eslint:recommended",
+  extends: ["eslint:recommended", "plugin:cypress/recommended"],
   overrides: [],
   parserOptions: {
     ecmaVersion: "latest",
