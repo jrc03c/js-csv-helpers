@@ -19,6 +19,7 @@ module.exports = function unparse(df, config) {
     index: false,
   }
 
+  df = df.copy()
   config = config ? { ...defaults, ...config } : defaults
 
   if (config.header) {
