@@ -1,4 +1,4 @@
-const { DataFrame, inferType, median, range } = require("@jrc03c/js-math-tools")
+const { DataFrame, inferType, max, range } = require("@jrc03c/js-math-tools")
 const papa = require("papaparse")
 
 function leftPad(x, n) {
@@ -34,10 +34,13 @@ module.exports = function parse(raw, config) {
     withCredentials: undefined,
     worker: false,
 
-    // This is the only value that's been changed from the Papa defaults
-    // because, for my purposes, I anticipate that most datasets will include a
-    // header row.
+    // I've changed this value from the Papa defaults because, at least for my
+    // purposes, I anticipate that most datasets will include a header row.
     header: true,
+
+    // I'm adding this option in case a dataset has (or should have) an index
+    // column (i.e., a first column filled with row names).
+    index: false,
 
     // I'm also adding my own options to infer types using my `inferType`
     // function in @jrc03c/js-math-tools. Papa offers a "dynamicTyping" option,
@@ -52,7 +55,7 @@ module.exports = function parse(raw, config) {
   config = config ? { ...defaults, ...config } : defaults
 
   const results = papa.parse(raw.trim(), config)
-  let data, columns
+  let data, columns, index
 
   if (config.header) {
     data = {}
@@ -62,18 +65,36 @@ module.exports = function parse(raw, config) {
     columns.forEach(col => {
       data[col] = results.data.map(row => row[col])
     })
-  } else {
-    const medianRowLength = median(results.data.map(row => row.length))
 
-    columns = range(0, medianRowLength).map(
-      i => `col${leftPad(i, medianRowLength.toString().length)}`
+    if (config.index) {
+      index = data[columns[0]]
+      delete data[columns[0]]
+      columns.shift()
+    }
+  } else {
+    const maxRowLength = max(results.data.map(row => row.length))
+
+    columns = range(0, maxRowLength).map(
+      i => `col${leftPad(i, maxRowLength.toString().length)}`
     )
 
-    data = results.data
+    data = results.data.map(row => {
+      row.length = maxRowLength
+      return row
+    })
+
+    if (config.index) {
+      index = data.map(row => row.shift())
+      columns.pop()
+    }
   }
 
   const out = new DataFrame(data)
   out.columns = columns
+
+  if (index) {
+    out.index = index
+  }
 
   return config && config.inferTypes
     ? out.apply(col => inferType(col).values)

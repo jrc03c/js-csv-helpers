@@ -13,16 +13,30 @@ module.exports = function unparse(df, config) {
 
     // This is the only value that's been changed from Papa's defaults.
     newline: "\n",
+
+    // I'm adding this option in case a dataset has (or should have) an index
+    // column (i.e., a first column filled with row names).
+    index: false,
   }
 
   config = config ? { ...defaults, ...config } : defaults
 
-  if (!config.columns) {
-    config.columns = df.columns
-  }
+  if (config.header) {
+    config.columns = config.columns || df.columns
 
-  if (typeof config.header === "boolean" && !config.header) {
+    if (config.index) {
+      df = df.assign("(index)", df.index)
+      config.columns.splice(0, 0, "(index)")
+      df = df.get(config.columns)
+    }
+  } else {
     config.columns = null
+
+    if (config.index) {
+      const columns = ["(index)"].concat(df.columns)
+      df = df.assign("(index)", df.index)
+      df = df.get(columns)
+    }
   }
 
   df = df.copy()
@@ -49,5 +63,6 @@ module.exports = function unparse(df, config) {
     })
   })
 
-  return papa.unparse([df.columns].concat(df.values), config).trim()
+  const values = config.header ? [df.columns].concat(df.values) : df.values
+  return papa.unparse(values, config).trim()
 }

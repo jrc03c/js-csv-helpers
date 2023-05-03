@@ -100,10 +100,13 @@ As of today, Papa's default configuration values for parsing are:
   withCredentials: undefined,
   worker: false,
 
-  // This is the only value that's been changed from the Papa defaults because,
-  // for my purposes, I anticipate that most datasets will include a header
-  // row.
+  // I've changed this value from the Papa defaults because, at least for my
+  // purposes, I anticipate that most datasets will include a header row.
   header: true,
+
+  // I'm adding this option in case a dataset has (or should have) an index
+  // column (i.e., a first column filled with row names).
+  index: false,
 
   // I'm also adding my own option to infer types using my `inferType` function
   // in @jrc03c/js-math-tools. Papa offers a "dynamicTyping" option, but I
