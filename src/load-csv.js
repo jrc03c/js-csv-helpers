@@ -6,7 +6,7 @@ const fs = (() => {
   }
 })()
 
-const isBrowser = require("./is-browser")
+const { isBrowser } = require("@jrc03c/js-math-tools")
 const parse = require("./parse")
 
 module.exports = async function loadCSV(path, config) {

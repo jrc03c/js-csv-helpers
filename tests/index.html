@@ -38,7 +38,7 @@
     <script src="../dist/js-csv-helpers.js"></script>
     <script>
       const { assert, DataFrame, inferType, isEqual } = JSMathTools
-      const { isBrowser, loadCSV, parse, saveCSV, unparse } = JSCSVHelpers
+      const { loadCSV, parse, saveCSV, unparse } = JSCSVHelpers
 
       async function test(desc, fn) {
         const container = document.getElementById("results")
@@ -92,10 +92,6 @@
       }
 
       async function runAllTests() {
-        await test("tests that `isBrowser` correctly returns `true` in browser environments", () => {
-          expect(isBrowser()).toBe(true)
-        })
-
         await test("tests that CSVs can be loaded from URLs correctly", async () => {
           const response = await fetch("test.json")
           const data = await response.json()
