@@ -4,11 +4,11 @@ const fsx = (() => {
   try {
     return require("@jrc03c/fs-extras")
   } catch (e) {
-    // ...
+    return null
   }
 })()
 
-const parse = require("./parse")
+const parse = require("./parse", Infinity)
 
 async function* streamLoadCSVFromDisk(path, config) {
   const rowsPerChunk = config.rowsPerChunk || 100

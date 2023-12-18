@@ -4,8 +4,8 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "build": "esbuild src/index.js --bundle --outfile=dist/js-csv-helpers.js --minify",
-    "watch": "esbuild src/index.js --bundle --outfile=dist/js-csv-helpers.js --minify --watch",
+    "build": "esbuild src/index.js --external:@jrc03c/fs-extras --bundle --outfile=dist/js-csv-helpers.js --minify",
+    "watch": "esbuild src/index.js --external:@jrc03c/fs-extras --bundle --outfile=dist/js-csv-helpers.js --minify --watch",
     "test": "jest",
     "pub": "npm version patch --force && npm publish --access=public"
   },

@@ -63,6 +63,8 @@ Given a `path` and a `DataFrame` (`data`) (and optionally a [`config`](#configur
 
 ## `streamLoadCSV(path, config)`
 
+> **NOTE:** This function currently only works for streaming files from disk. I plan to add support for streaming files over the web but just haven't gotten to it yet.
+
 Given a `path` and a [`config`](#configuration) object, this function returns chunks of a `DataFrame` asynchronously. A "chunk" just means a subset of the entire CSV file containing just a few rows. Chunks are returned in same order in which they appear in the CSV file; i.e., if you're streaming the file 10 rows at a time, then the first chunk will contain rows 1-10, the second chunk will contain rows 11-20, and so on. The number of rows in each chunk can be defined using a `rowsPerChunk` property on the `config` object.
 
 For example, if I wanted to stream a large CSV 10 rows at a time, I'd do this:
