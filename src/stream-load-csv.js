@@ -11,7 +11,7 @@ const fsx = (() => {
 const parse = require("./parse")
 
 async function* streamLoadCSVFromDisk(path, config) {
-  const chunkSize = config.chunkSize || 100
+  const rowsPerChunk = config.rowsPerChunk || 100
   const stream = fsx.createFileStreamReader(path)
   let columns
   let rows = []
@@ -24,25 +24,31 @@ async function* streamLoadCSVFromDisk(path, config) {
 
     rows.push(line)
 
-    if (rows.length - 1 >= chunkSize) {
+    if (rows.length - 1 >= rowsPerChunk) {
       const raw = rows.join("\n")
       const df = parse(raw, config)
-      df.index = range(i, i + chunkSize).map(v => "row" + v.toString())
+
+      if (!config.index) {
+        df.index = range(i, i + rowsPerChunk).map(v => "row" + v.toString())
+      }
+
       yield df
       rows = [columns]
-      i += chunkSize
+      i += rowsPerChunk
     }
   }
 
   if (rows.length > 1) {
     const raw = rows.join("\n")
     const df = parse(raw, config)
-    df.index = range(i, i + rows.length - 1).map(v => "row" + v.toString())
+
+    if (!config.index) {
+      df.index = range(i, i + rows.length - 1).map(v => "row" + v.toString())
+    }
+
     yield df
   }
 }
-
-// async function streamLoadCSVFromWeb(path, config) {}
 
 function streamLoadCSV(path, config) {
   if (isBrowser()) {

@@ -61,6 +61,27 @@ Given a CSV string and a [`config`](#configuration) object, this function return
 
 Given a `path` and a `DataFrame` (`data`) (and optionally a [`config`](#configuration) object), this function returns a `Promise` that resolves to `undefined`.
 
+## `streamLoadCSV(path, config)`
+
+Given a `path` and a [`config`](#configuration) object, this function returns chunks of a `DataFrame` asynchronously. A "chunk" just means a subset of the entire CSV file containing just a few rows. Chunks are returned in same order in which they appear in the CSV file; i.e., if you're streaming the file 10 rows at a time, then the first chunk will contain rows 1-10, the second chunk will contain rows 11-20, and so on. The number of rows in each chunk can be defined using a `rowsPerChunk` property on the `config` object.
+
+For example, if I wanted to stream a large CSV 10 rows at a time, I'd do this:
+
+```js
+const { streamLoadCSV } = require("@jrc03c/js-csv-helpers")
+
+!(async () => {
+  const stream = streamLoadCSV("my-data.csv", {
+    inferTypes: true,
+    rowsPerChunk: 10,
+  })
+
+  for await (const chunk of stream) {
+    chunk.print()
+  }
+})()
+```
+
 ## `unparse(df, config)`
 
 Given a `DataFrame` and a [`config`](#configuration) object, this function returns a CSV string (synchronously).
