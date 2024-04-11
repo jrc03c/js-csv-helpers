@@ -4,6 +4,12 @@ const JSCSVHelpers = {
   saveCSV: require("./save-csv"),
   streamLoadCSV: require("./stream-load-csv"),
   unparse: require("./unparse"),
+
+  dump(){
+    Object.keys(JSCSVHelpers).forEach(key => {
+      globalThis[key] = JSCSVHelpers[key]
+    })
+  },
 }
 
 if (typeof window !== "undefined") {
