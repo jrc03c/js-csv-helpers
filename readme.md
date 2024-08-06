@@ -1,3 +1,7 @@
+> ⚠️ **NOTE:** ⚠️ This project is being merged into a monorepo [here](https://github.com/jrc03c/monorepo/tree/main/packages/js-csv-helpers). This repo will soon be archived.
+
+---
+
 # Intro
 
 This is a little helper library to complement [@jrc03c/js-math-tools](https://github.com/jrc03c/js-math-tools) and [@jrc03c/js-data-science-helpers](https://github.com/jrc03c/js-data-science-helpers). It's a relatively thin wrapper around [`papaparse`](https://www.papaparse.com/). All it does is load CSV files or strings as `DataFrame` objects and save `DataFrame` objects as CSV files or strings.
